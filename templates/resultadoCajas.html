@@ -1,0 +1,27 @@
+{% extends "layout.html" %} 
+
+{% block content %}
+<div class="mt-5 text-center">
+    <h5>Numeros ingresados</h5>
+        {% for i in numeros %}
+            <li>{{ i }}</li>
+        {% endfor %}
+
+    <h5>Numero menor</h5>
+    <p>{{ minNum }}</p>
+
+    <h5>Numero mayor</h5>
+    <p>{{ maxNum }}</p>
+
+    <h5>Promedio</h5>
+    <p>{{ promedio }}</p>
+
+    <h5>Numeros repetidos</h5>
+        {% for numRep, veces in numRepetidos %}
+        <li>
+            {{ veces }} veces se repitió el número {{ numRep }}  
+        </li>
+        {% endfor %}
+</div>
+
+{% endblock %}

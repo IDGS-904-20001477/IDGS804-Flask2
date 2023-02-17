@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<div class="col-xs-6">
+    {% from "_macros.html" import render_firld %}
+    <form action="" method="post">
+        <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+        <div class="row control-group">
+            <div class="form-group">
+                {{render_firld(form.matricula, class='form-control')}}
+            </div>
+        </div>
+        {{render_firld(form.nombre, class="form-control")}}
+        {{render_firld(form.apaterno, class="form-control")}}
+        {{render_firld(form.email, calss="form-control")}}
+        <input type="submit" id="al" name="al" value="Registrar">
+    </form>
+</div>
+<div class="col-md-4">
+   <!-- <h1>Matricula:{{mat}}</h1>
+    <h1>Nombre:{{nom}}</h1>-->
+</div>
+
+{% endblock %}
