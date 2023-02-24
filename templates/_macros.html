@@ -25,6 +25,14 @@
     <label for="{{ name }}">{{placeholder}}</label>
     {{ field.label }}
     {{ field(**kwargs)|safe }}
-</div>   
-
-{% endmacro %}
+</div>  
+{%if field.errors%}
+    <ul>
+        {%for error in field.errors%}
+            <li style="color: red;">
+                {{error}}
+            </li>
+        {%endfor%}
+    </ul>
+{%endif%}
+{% endmacro %} 

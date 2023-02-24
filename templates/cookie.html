@@ -1,5 +1,4 @@
 {% extends 'layout.html' %}
-
 {% block content %}
 <div class="col-xs-6">
     {% from '_macros.html' import render_field %}
@@ -7,22 +6,11 @@
         {{form.csrf_token}}
         <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
         <div class="row control_group">
-            <div class="form-group">
-                {{render_field(form.matricula, class = 'form-control')}}
-            </div>
-        </div>
-        {{render_field(form.nombre)}}
-        {{render_field(form.apaterno)}}
-        {{render_field(form.email)}}
+            {{render_field(form.username)}}
+            {{render_field(form.password)}}
         <input type="submit" value="Registrar" id="al" name="al">
     </form>
 </div>
 <div class="col-md-4">
-    <h1>
-        Matricula: {{datos[0]}}
-    </h1>
-    <h1>
-        Nombre: {{datos[1]}}
-    </h1>
 </div>
 {% endblock %}
