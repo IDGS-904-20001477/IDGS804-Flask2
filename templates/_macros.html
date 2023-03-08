@@ -36,3 +36,15 @@
     </ul>
 {%endif%}
 {% endmacro %} 
+
+{% macro cell(color1, color2, color3, valor, valor_min, valor_max) %}
+<tr>
+    <td class="{{ color1 }}">{{ color1 }}</td>
+    <td class="{{ color2 }}">{{ color2 }}</td>
+    <td class="{{ color3 }}">{{ color3 }}</td>
+    <td>{{ valor }}</td>
+    <td>{{ valor_min }}</td>
+    <td>{{ valor_max }}</td>
+</tr>
+    
+{% endmacro %}

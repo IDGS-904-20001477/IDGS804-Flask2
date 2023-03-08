@@ -4,6 +4,8 @@ from flask_wtf.csrf import CSRFProtect
 
 import forms
 from cajasDinamicas import BoxForm
+from forms import ResistenciaForm
+import json
 
 app = Flask(__name__)
 csrf = CSRFProtect()
@@ -50,24 +52,25 @@ def resultados():
 def traductor():
     words = forms.WordsForm(request.form)
     palabraEncontrada = ''
-    if(request.method == 'POST' and words.validate()):
+    if(request.method == 'POST'):
         btnGuardar = request.form.get('btnGuardar')
         btnTraducir = request.form.get('btnTraducir')
-        if(btnGuardar == 'Guardar'):    
+        if(btnGuardar == 'Guardar' and words.validate()):
             file = open('palabras.txt', 'a')
             file.write('\n' + words.spanish.data.upper() + '\n' + words.english.data.upper())
             file.close()
         if(btnTraducir == 'Traducir'):
+            palabraEncontrada = 'No existe una coincidencia'
             opcion = request.form.get('translate')
             file = open('palabras.txt', 'r')
             palabras = [linea.rstrip('\n') for linea in file]
             if(opcion == 'spanish'):
-                spanishWord = request.form.get('txtSpanish')
+                spanishWord = request.form.get('txtText')
                 for posicion in range(len(palabras)):
                     if(palabras[posicion] == spanishWord.upper()):
                         palabraEncontrada = palabras[posicion - 1]
             elif(opcion == 'english'):
-                englishWord = request.form.get('txtEnglish')
+                englishWord = request.form.get('txtText')
                 for posicion in range(len(palabras)):
                     if(palabras[posicion] == englishWord.upper()):
                         palabraEncontrada = palabras[posicion + 1]
@@ -88,6 +91,59 @@ def cookie():
         response.set_cookie('datos_usuario', datos)
         flash(success_message)
     return response
+
+@app.route('/resistencias')
+def index():
+    form = ResistenciaForm(request.form)
+    return render_template('resistencias.html', form=form)
+
+@app.route('/resistencias', methods=['POST'])
+def calcular():
+    banda1 = request.form['banda1']
+    banda2 = request.form['banda2']
+    banda3 = request.form['banda3']
+    tolerancia = request.form['tolerancia']
+    colors = ['negro', 'cafe', 'rojo', 'naranja', 'amarillo',
+               'verde', 'azul', 'violeta', 'gris', 'blanco']
+    concat = str(banda1) + str(banda2)
+    valor = float(concat) * float(banda3)
+
+    if tolerancia == '1':
+        valor_min = valor - (valor * 0.05)
+        valor_max = valor + (valor * 0.05)
+    elif tolerancia == '2':
+        valor_min = valor - (valor * 0.1)
+        valor_max = valor + (valor * 0.1)
+    else:
+        valor_min = valor * 0.2
+        valor_max = valor * 0.2
+
+    filename='registros.json'
+    
+    with open(filename, 'r') as f:
+        data = json.load(f)
+
+    if isinstance(data, list):
+        data.append({'valor': str(valor), 
+            'min': str(valor_min), 
+            'max': str(valor_max), 
+            'color1': colors[int(banda1)], 
+            'color2': colors[int(banda2)], 
+            'color3': colors[len(banda3)-1]})
+    else:
+        data = [{'valor': str(valor), 
+            'min': str(valor_min), 
+            'max': str(valor_max), 
+            'color1': colors[int(banda1)], 
+            'color2': colors[int(banda2)], 
+            'color3': colors[len(banda3)-1]}]
+
+    with open(filename, 'w') as f:
+        json.dump(data, f)
+
+    return render_template('resistencias.html', history=data)
+
+
 
 if __name__ == "__main__":
     app.run(debug = True, port = 8080)

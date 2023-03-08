@@ -10,23 +10,22 @@
                 {{render_field(form.spanish)}}
                 {{render_field(form.english)}}
             </div>
-            <input type="submit" value="Guardar" id="btnGuardar" name="btnGuardar" class="btn btn-primary">
+            <input type="submit" value="Guardar" id="btnGuardar" name="btnGuardar" class="btn btn-danger">
         </div>
         <div class="mt-5 text-center"><br>
             <div class="row control_group">
-                <input type="text" name="txtSpanish" id="txtSpanish">
+                <input type="text" name="txtText" id="txtText">
                 <input type="radio" name="translate" value="spanish"> Español
                 <br>
-                <input type="text" name="txtEnglish" id="txtEnglish">
                 <input type="radio" name="translate" value="english"> Ingles
                 <br>
             </div>
-            <input type="submit" value="Traducir" id="btnTraducir" name="btnTraducir" class="btn btn-primary">
+            <input type="submit" value="Traducir" id="btnTraducir" name="btnTraducir" class="btn btn-success">
             <br>
             <br>
-            <h1>
+            <h3>
                 {{palabraEncontrada}}
-            </h1>
+            </h3>
         </div>
     </form>
 </div>
