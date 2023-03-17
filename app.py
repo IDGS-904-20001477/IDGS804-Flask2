@@ -1,11 +1,13 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect
 from flask import request, flash, make_response
 from flask_wtf.csrf import CSRFProtect
 
 import forms
 from cajasDinamicas import BoxForm
-from forms import ResistenciaForm
+from forms import ResistanceForm, COLORS, TOLERANCE
 import json
+from resistance import saveResistance, getResistance, calculate
+
 
 app = Flask(__name__)
 csrf = CSRFProtect()
@@ -92,56 +94,26 @@ def cookie():
         flash(success_message)
     return response
 
-@app.route('/resistencias')
-def index():
-    form = ResistenciaForm(request.form)
-    return render_template('resistencias.html', form=form)
+@app.context_processor
+def utility_processor():
+    def getItemColor(item, position):
+        if position > 3:
+            return [t[1] for t in TOLERANCE if t[0] == item][0] or ''
+        return [color[0] for color in COLORS if color[position] == item][0] or 'white'
+    return dict(getItemColor=getItemColor)
 
-@app.route('/resistencias', methods=['POST'])
-def calcular():
-    banda1 = request.form['banda1']
-    banda2 = request.form['banda2']
-    banda3 = request.form['banda3']
-    tolerancia = request.form['tolerancia']
-    colors = ['negro', 'cafe', 'rojo', 'naranja', 'amarillo',
-               'verde', 'azul', 'violeta', 'gris', 'blanco']
-    concat = str(banda1) + str(banda2)
-    valor = float(concat) * float(banda3)
+@app.get('/resistencias')
+def resistance():
+    form = ResistanceForm()
+    data = [calculate(*resistance) for resistance in getResistance()] 
 
-    if tolerancia == '1':
-        valor_min = valor - (valor * 0.05)
-        valor_max = valor + (valor * 0.05)
-    elif tolerancia == '2':
-        valor_min = valor - (valor * 0.1)
-        valor_max = valor + (valor * 0.1)
-    else:
-        valor_min = valor * 0.2
-        valor_max = valor * 0.2
+    return render_template('resistencias.html', form=form, data = data, colors = COLORS)
 
-    filename='registros.json'
-    
-    with open(filename, 'r') as f:
-        data = json.load(f)
-
-    if isinstance(data, list):
-        data.append({'valor': str(valor), 
-            'min': str(valor_min), 
-            'max': str(valor_max), 
-            'color1': colors[int(banda1)], 
-            'color2': colors[int(banda2)], 
-            'color3': colors[len(banda3)-1]})
-    else:
-        data = [{'valor': str(valor), 
-            'min': str(valor_min), 
-            'max': str(valor_max), 
-            'color1': colors[int(banda1)], 
-            'color2': colors[int(banda2)], 
-            'color3': colors[len(banda3)-1]}]
-
-    with open(filename, 'w') as f:
-        json.dump(data, f)
-
-    return render_template('resistencias.html', history=data)
+@app.post('/resistencias')
+def create_resistance():
+    form = ResistanceForm(request.form)
+    saveResistance(form.firstBand.data, form.secondBand.data, form.thirdBand.data, form.tolerance.data)
+    return redirect('/resistencias')
 
 
 

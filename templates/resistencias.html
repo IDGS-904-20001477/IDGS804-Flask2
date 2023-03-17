@@ -1,109 +1,61 @@
-{% extends 'layout.html' %}
+{% extends "layout.html" %} 
 
 {% block content %}
-<div class="container">
-    
-    {% if form %}
-    {% from '_macros.html' import render_field %}
 
-    <form action="" method="POST" novalidate>
-        {{form.csrf_token}}
-        <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-        <div class="row control-group">
-            <div class="form-group">
-                {{ render_field(form.banda1) }}
-                {{ render_field(form.banda2) }}
-                {{ render_field(form.banda3) }}
-                {{ render_field(form.tolerancia) }}
-            </div>
-                        
+<h1 class="display-4 fw-semibold">Resistencias</h1>
+
+{% from "_macros.html" import render_field %}
+
+<hr />
+        <div class="col-sm-6">
+            <form action="/resistencias" method="POST" novalidate>
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token() }}"
+                />
+                {{ render_field(form.firstBand, class="form-select") }} {{
+                render_field(form.secondBand, class="form-select") }} {{
+                render_field(form.thirdBand, class="form-select") }} {{
+                render_field(form.tolerance, class="form-select") }}
+
+                <div class="mt-5 text-center">
+                    <button
+                        type="submit"
+                        class="btn btn-primary btn-lg px-5 rounded-pill fw-semibold"
+                    >
+                        CACULAR
+                    </button>
+                </div>
+            </form>
         </div>
-        <input class="btn btn-primary" type="submit" id="calcular" name="calcular" value="Calcular">
-    </form>
-        
-    {% endif %}
-
-    {% if history %} 
-    <table class="table">
-        <tr>
-            <th>Col Banda 1</th>
-            <th>Col Banda 2</th>
-            <th>Col Banda 3</th>
-            <th>Valor</th>
-            <th>Minimo</th>
-            <th>Maximo</th>
-        </tr>
-        {% from '_macros.html' import cell %}
-        {% for i in history %}
-            {{cell(i.color1, i.color2, i.color3, i.valor, i.min, i.max)}}
-        {% endfor %}
-    </table>
-    
-    {% endif %}
-</div>
-
-<style>
-    table {
-        border-collapse: separate;
-        border-spacing: 5px;
-        background: #000 url("gradient.gif") bottom left repeat-x;
-        color: #fff;
-     }
-     td, th {
-        background: #fff;
-        color: #000;
-     }
-    .negro{
-        background-color: black;
-        color: white;
-        text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-    }
-     .cafe{
-        background-color: burlywood;
-        color: white;
-        text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-    }
-     .rojo{
-        background-color: red;
-        color: white;
-     text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-    }
-     .naranja{
-        background-color: orange;
-        color: white;
-     text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-    }
-     .amarillo{
-        background-color: yellow;
-        color: white;
-     text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-    }
-    
-    .verde{
-        background-color: green;
-                    color: white;
-                   text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-                }
-    .azul{
-        background-color: cornflowerblue;
-                        color: white;
-                    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-                }
-    .violeta{
-        background-color: purple;
-                        color: white;
-                    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-                }
-    .gris{
-        background-color: gray;
-                        color: white;
-                    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-                }
-    .blanco{
-        background-color: white;
-    color: white;
-    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-}
-</style>
+        <div class="col-lg-8">
+            <table class=" mt-5 table caption-top border border-2 rounded-4 overflow-hidden">
+                <thead>
+                    <tr>
+                        <th>Banda 1</th>
+                        <th>Banda 2</th>
+                        <th>Banda 3</th>
+                        <th>Tolerancia</th>
+                        <th>Resistencia</th>
+                        <th>Min</th>
+                        <th>Max</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for first, second, third, tolerance, result, min, max in data %}
+                    <tr>
+                        <td class="bg-{{ first }} text-center text-white">{{ first }}</td>
+                        <td class="bg-{{ second }} text-center text-white">{{ second }}</td>
+                        <td class="bg-{{ third }} text-center text-white">{{ third }}</td>
+                        <td class="bg-{{ tolerance }} text-center text-white">{{ tolerance }}</td>
+                        <td>{{ result }}</td>
+                        <td>{{ min }}</td>
+                        <td>{{ max }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+    </div>
 
 {% endblock %}
